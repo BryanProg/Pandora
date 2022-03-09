@@ -8,7 +8,7 @@
 
 namespace Pandora
 {
-    namespace Vector
+    namespace Vec
     {
         template<std::size_t N, typename T>
         class vec;
