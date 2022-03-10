@@ -3,6 +3,9 @@
 #include <iostream>
 #include <cstdint>
 #include <cmath>
+#include <array>
+#include <initializer_list>
+#include <cassert>
 #include <type_traits>
 #include "Utils.hpp"
 
@@ -72,10 +75,64 @@ namespace Pandora
             static_assert(!std::is_reference_v<T>, "[ERROR] Type \"T\" can't be reference\n");
             static_assert(!std::is_pointer_v<T>, "[ERROR] Type \"T\" can't be pointer\n");
 
+            template<std::size_t, typename> friend class vec;
+
             public:
-                using value_type = std::decay_t<T>;
+                using value_type      = std::decay_t<T>;
+                using size_type       = std::size_t;
+                using reference       = value_type&;
+                using const_reference = value_type const&;
+                using pointer         = value_type*;
+                using const_pointer   = const value_type*;
+                using iterator        = typename std::array<T, N>::iterator;
+                using const_iterator  = typename std::array<T, N>::const_iterator;
+                using difference_type = typename std::iterator_traits<iterator>::difference_type;
+            
+            public:
+                constexpr vec() = default;
 
+                constexpr vec(const vec&) = default;
+                constexpr vec(vec&&)      = default;
+
+                constexpr vec& operator= (const vec&) = default;
+                constexpr vec& operator= (vec&&)      = default;
+
+                constexpr vec(std::initializer_list<T> list_arg)
+                    : components{ }
+                {
+                    assert(list_arg.size() == N);
+                    
+                    for(auto sz = 0ULL; sz < N; ++sz)
+                        components[sz] = *(list_arg.begin() + sz);
+                }
+
+                template<typename iter,
+                         typename = !std::is_same_v<iter, value_type>// The iterator should be different
+                         typename = std::enable_if_t<is_iterator_v<iter, std::forward_iterator_tag>>>
+                constexpr vec(iter b, iter e)
+                    : components{}
+                {
+
+                    Difference_iterator_t<iter> diff_it = std::distance(b, e);
+
+                    assert(diff_it == N);
+                    
+                    for(decltype(diff_it) idx = 0; idx < diff_it; ++idx)
+                        components[idx] = *(b + idx);
+                }
+
+                explicit constexpr vec(const std::array<T, N> arr)
+                    : components{ arr }
+                {}
+
+                constexpr iterator begin() {return components.begin();}
+                constexpr iterator end()   {return components.end();}
+
+                constexpr const_iterator begin() const { return components.cbegin();}
+                constexpr const_iterator end()   const { return components.cend();}
+
+            private:
+                std::array<T, N> components;
         };
-
     }
 }
