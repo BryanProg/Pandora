@@ -107,6 +107,8 @@ namespace Pandora
                         components[sz] = *(list_arg.begin() + sz);
                 }*/
 
+                //to do(Bryan): Implementar para inicializar com até 0 < elemente <= N
+                // tirar restrição dos contém ter o mesmo tamanho, ou seja podendo ser menor ou igual.
                 template<typename iter,
                          typename = std::enable_if_t<!std::is_same_v<iter, value_type>>,// The iterator should be different
                          typename = std::enable_if_t<is_iterator_v<iter, std::forward_iterator_tag>>>
@@ -122,27 +124,41 @@ namespace Pandora
                         components[idx] = *(b + idx);
                 }
 
-                explicit constexpr vec(const std::array<T, N> arr)
+                explicit constexpr vec(const std::array<T, N>& arr)
                     : components{ arr }
-                {}
+                {
+                }
+
+                explicit constexpr vec(std::array<T, N>&& arr)
+                    : components{ std::move(arr) }
+                {
+                }
 
                 template<std::size_t Sz, typename U,
+                         typename = std::enable_if_t<N == Sz>,
                          typename = std::enable_if_t<std::is_convertible_v<U, T>>>
                 constexpr vec(const vec<Sz, U>& cont)
                     : components {}
                 {
-                    // to do (Bryan): transpor por ingles
-                    static_assert(N == Sz, "[ERROR] Os tamanhos são diferentes");
-
                     for(std::size_t idx{}; idx < N; ++idx)
                         components[idx] = cont.components[idx]; 
+                }
+
+                template<std::size_t Sz, typename U,
+                         typename = std::enable_if_t<N == Sz>,
+                         typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+                constexpr vec(const vec<Sz, U>&& cont)
+                    : components {}
+                {
+                    for(std::size_t idx{}; idx < N; ++idx)
+                        components[idx] = std::move(cont.components[idx]); 
                 }
 
                 template<typename ... Args,
                          typename = std::enable_if_t<sizeof...(Args) == N>,
                          typename = std::enable_if_t<is_all_convertible_v<T, Args...>>>
-                constexpr vec(Args... args)
-                    : components{ static_cast<T>(args)... }
+                constexpr vec(Args&&... args)
+                    : components{ std::forward<T>(static_cast<T>(args))... }
                 {
                 }
                 
@@ -153,6 +169,7 @@ namespace Pandora
                 constexpr const_iterator begin() const { return components.cbegin();}
                 constexpr const_iterator end()   const { return components.cend();}
 
+                constexpr vec& operator+= (const vec& obj);
             private:
                 std::array<T, N> components;
         };
