@@ -97,6 +97,7 @@ namespace Pandora
                 constexpr vec& operator= (const vec&) = default;
                 constexpr vec& operator= (vec&&)      = default;
 
+                /*
                 constexpr vec(std::initializer_list<T> list_arg)
                     : components{ }
                 {
@@ -104,12 +105,12 @@ namespace Pandora
                     
                     for(auto sz{ 0ULL }; sz < N; ++sz)
                         components[sz] = *(list_arg.begin() + sz);
-                }
+                }*/
 
                 template<typename iter,
                          typename = std::enable_if_t<!std::is_same_v<iter, value_type>>,// The iterator should be different
                          typename = std::enable_if_t<is_iterator_v<iter, std::forward_iterator_tag>>>
-                constexpr vec(iter b, iter e)
+                explicit constexpr vec(iter b, iter e)
                     : components{}
                 {
 
@@ -125,16 +126,26 @@ namespace Pandora
                     : components{ arr }
                 {}
 
-                // commit 1
                 template<std::size_t Sz, typename U,
                          typename = std::enable_if_t<std::is_convertible_v<U, T>>>
                 constexpr vec(const vec<Sz, U>& cont)
+                    : components {}
                 {
+                    // to do (Bryan): transpor por ingles
                     static_assert(N == Sz, "[ERROR] Os tamanhos são diferentes");
 
                     for(std::size_t idx{}; idx < N; ++idx)
                         components[idx] = cont.components[idx]; 
                 }
+
+                template<typename ... Args,
+                         typename = std::enable_if_t<sizeof...(Args) == N>,
+                         typename = std::enable_if_t<is_all_convertible_v<T, Args...>>>
+                constexpr vec(Args... args)
+                    : components{ static_cast<T>(args)... }
+                {
+                }
+                
 
                 constexpr iterator begin() {return components.begin();}
                 constexpr iterator end()   {return components.end();}
