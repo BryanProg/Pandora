@@ -26,4 +26,6 @@ namespace Pandora
     template<typename T>
     using Difference_iterator_t = typename std::iterator_traits<T>::difference_type;
 
+    template<typename T, typename ... Args>
+    constexpr inline bool is_all_convertible_v = (std::is_convertible_v<T, Args> && ...);
 }
