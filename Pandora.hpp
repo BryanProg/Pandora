@@ -102,12 +102,12 @@ namespace Pandora
                 {
                     assert(list_arg.size() == N);
                     
-                    for(auto sz = 0ULL; sz < N; ++sz)
+                    for(auto sz{ 0ULL }; sz < N; ++sz)
                         components[sz] = *(list_arg.begin() + sz);
                 }
 
                 template<typename iter,
-                         typename = !std::is_same_v<iter, value_type>// The iterator should be different
+                         typename = std::enable_if_t<!std::is_same_v<iter, value_type>>,// The iterator should be different
                          typename = std::enable_if_t<is_iterator_v<iter, std::forward_iterator_tag>>>
                 constexpr vec(iter b, iter e)
                     : components{}
@@ -117,13 +117,24 @@ namespace Pandora
 
                     assert(diff_it == N);
                     
-                    for(decltype(diff_it) idx = 0; idx < diff_it; ++idx)
+                    for(decltype(diff_it) idx{}; idx < diff_it; ++idx)
                         components[idx] = *(b + idx);
                 }
 
                 explicit constexpr vec(const std::array<T, N> arr)
                     : components{ arr }
                 {}
+
+                // commit 1
+                template<std::size_t Sz, typename U,
+                         typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+                constexpr vec(const vec<Sz, U>& cont)
+                {
+                    static_assert(N == Sz, "[ERROR] Os tamanhos são diferentes");
+
+                    for(std::size_t idx{}; idx < N; ++idx)
+                        components[idx] = cont.components[idx]; 
+                }
 
                 constexpr iterator begin() {return components.begin();}
                 constexpr iterator end()   {return components.end();}
