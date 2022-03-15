@@ -220,5 +220,11 @@ namespace Pandora
             
             return true;
         }
+
+        template<std::size_t Sz, typename U>
+        inline bool operator!= (const vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
+        {
+            return !(lhs == rhs);
+        }
     }
 }
