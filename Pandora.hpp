@@ -201,5 +201,17 @@ namespace Pandora
             
             return *this;
         }
+
+        // commit 2
+        template<std::size_t N, typename T>
+        template<std::size_t Sz, typename U, typename, typename>
+        constexpr inline vec<N, T>& vec<N, T>::operator-= (const vec<Sz, U>& obj)
+        {
+            for(std::size_t count{}; count < N; ++count)
+                this->components[count] -= obj.components[count];
+            
+            return *this;
+        }
+
     }
 }
