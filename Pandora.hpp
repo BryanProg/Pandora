@@ -191,7 +191,6 @@ namespace Pandora
                 std::array<T, N> components;
         };
 
-        // commit 1
         template<std::size_t N, typename T>
         template<std::size_t Sz, typename U, typename, typename>
         constexpr inline vec<N, T>& vec<N, T>::operator+= (const vec<Sz, U>& obj)
@@ -202,7 +201,6 @@ namespace Pandora
             return *this;
         }
 
-        // commit 2
         template<std::size_t N, typename T>
         template<std::size_t Sz, typename U, typename, typename>
         constexpr inline vec<N, T>& vec<N, T>::operator-= (const vec<Sz, U>& obj)
@@ -213,5 +211,14 @@ namespace Pandora
             return *this;
         }
 
+        template<std::size_t Sz, typename U>
+        inline bool operator== (const vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
+        {
+            for(std::size_t count{}; count < Sz; ++count)
+                if (lhs.components[count] != rhs.components[count])
+                    return false;
+            
+            return true;
+        }
     }
 }
