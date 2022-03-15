@@ -16,6 +16,12 @@ namespace Pandora
         template<std::size_t N, typename T>
         class vec;
 
+        template<std::size_t Sz, typename U>
+        inline bool operator== (const vec<Sz, U>&, const vec<Sz, U>&);
+
+        template<std::size_t Sz, typename U>
+        inline bool operator!= (const vec<Sz, U>&, const vec<Sz, U>&);
+
         // Definitions
         namespace
         {
@@ -77,6 +83,9 @@ namespace Pandora
 
             template<std::size_t, typename> friend class vec;
 
+            friend bool operator== <N, T> (const vec<N, T>&, const vec<N, T>&);
+            friend bool operator!= <N, T> (const vec<N, T>&, const vec<N, T>&);
+
             public:
                 using value_type      = std::decay_t<T>;
                 using size_type       = std::size_t;
@@ -107,8 +116,8 @@ namespace Pandora
                         components[sz] = *(list_arg.begin() + sz);
                 }*/
 
-                //to do(Bryan): Implementar para inicializar com até 0 < elemente <= N
-                // tirar restrição dos contém ter o mesmo tamanho, ou seja podendo ser menor ou igual.
+                //to do(Bryan): Implement to initialize with up to 0 <element <= n
+                // Taking restriction contains have the same size, ie being less than or equal.
                 template<typename iter,
                          typename = std::enable_if_t<!std::is_same_v<iter, value_type>>,// The iterator should be different
                          typename = std::enable_if_t<is_iterator_v<iter, std::forward_iterator_tag>>>
@@ -162,16 +171,35 @@ namespace Pandora
                 {
                 }
                 
-
                 constexpr iterator begin() {return components.begin();}
                 constexpr iterator end()   {return components.end();}
 
                 constexpr const_iterator begin() const { return components.cbegin();}
                 constexpr const_iterator end()   const { return components.cend();}
 
-                constexpr vec& operator+= (const vec& obj);
+                template<std::size_t Sz, typename U, 
+                         typename = std::enable_if_t<Sz == N>,
+                         typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+                constexpr inline vec& operator+= (const vec<Sz, U>& obj);
+            
+                template<std::size_t Sz, typename U, 
+                         typename = std::enable_if_t<Sz == N>,
+                         typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+                constexpr inline vec& operator-= (const vec<Sz, U>& obj);
+
             private:
                 std::array<T, N> components;
         };
+
+        // commit 1
+        template<std::size_t N, typename T>
+        template<std::size_t Sz, typename U, typename, typename>
+        constexpr inline vec<N, T>& vec<N, T>::operator+= (const vec<Sz, U>& obj)
+        {
+            for(std::size_t count{}; count < N; ++count)
+                this->components[count] += obj.components[count];
+            
+            return *this;
+        }
     }
 }
