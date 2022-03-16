@@ -16,6 +16,10 @@ namespace Pandora
                                std::is_same_v<std::decay_t<T>, uint32_t> ||
                                std::is_same_v<std::decay_t<T>, uint64_t>;
 
+    template<typename T>
+    constexpr bool is_fp_v = std::is_same_v<std::decay_t<T>, float>       || 
+                             std::is_same_v<std::decay_t<T>, double>      ||
+                             std::is_same_v<std::decay_t<T>, long double>;
     
     template <typename iter>
 	using iter_category_t = typename std::iterator_traits<iter>::iterator_category;
