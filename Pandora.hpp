@@ -17,10 +17,10 @@ namespace Pandora
         class vec;
 
         template<std::size_t Sz, typename U>
-        inline bool operator== (const vec<Sz, U>&, const vec<Sz, U>&);
+        constexpr inline bool operator== (const vec<Sz, U>&, const vec<Sz, U>&);
 
         template<std::size_t Sz, typename U>
-        inline bool operator!= (const vec<Sz, U>&, const vec<Sz, U>&);
+        constexpr inline bool operator!= (const vec<Sz, U>&, const vec<Sz, U>&);
 
         // Definitions
         namespace
@@ -212,7 +212,7 @@ namespace Pandora
         }
 
         template<std::size_t Sz, typename U>
-        inline bool operator== (const vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
+        constexpr inline bool operator== (const vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
         {
             for(std::size_t count{}; count < Sz; ++count)
                 if (lhs.components[count] != rhs.components[count])
@@ -222,7 +222,7 @@ namespace Pandora
         }
 
         template<std::size_t Sz, typename U>
-        inline bool operator!= (const vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
+        constexpr inline bool operator!= (const vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
         {
             return !(lhs == rhs);
         }
