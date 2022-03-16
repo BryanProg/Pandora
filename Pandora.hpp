@@ -22,6 +22,12 @@ namespace Pandora
         template<std::size_t Sz, typename U>
         constexpr inline bool operator!= (const vec<Sz, U>&, const vec<Sz, U>&);
 
+        template<std::size_t Sz, typename U>
+        constexpr inline vec<Sz, U>& operator+ (vec<Sz, U>&, const vec<Sz, U>&);
+
+        template<std::size_t Sz, typename U>
+        constexpr inline vec<Sz, U>&& operator+ (vec<Sz, U>&&, const vec<Sz, U>&);
+
         // Definitions
         namespace
         {
@@ -83,8 +89,13 @@ namespace Pandora
 
             template<std::size_t, typename> friend class vec;
 
-            friend bool operator== <N, T> (const vec<N, T>&, const vec<N, T>&);
-            friend bool operator!= <N, T> (const vec<N, T>&, const vec<N, T>&);
+            // Relational operators Friends
+            friend constexpr bool operator== <N, T> (const vec<N, T>&, const vec<N, T>&);
+            friend constexpr bool operator!= <N, T> (const vec<N, T>&, const vec<N, T>&);
+
+            // Binary Operators Friends
+            friend constexpr vec& operator+ <N, T> (vec&, const vec&);
+            friend constexpr vec&& operator+ <N, T> (vec&&, const vec&);
 
             public:
                 using value_type      = std::decay_t<T>;
@@ -187,12 +198,17 @@ namespace Pandora
                          typename = std::enable_if_t<std::is_convertible_v<U, T>>>
                 constexpr inline vec& operator-= (const vec<Sz, U>& obj);
 
+                template<typename = std::enable_if_t<is_fp_v<T> || is_uint_v<T> || is_int_v<T>>>
+                constexpr inline vec& operator*= (const float);
+
+                // operator []
             private:
                 std::array<T, N> components;
         };
 
+        // OPERATORS
         template<std::size_t N, typename T>
-        template<std::size_t Sz, typename U, typename, typename>
+            template<std::size_t Sz, typename U, typename, typename>
         constexpr inline vec<N, T>& vec<N, T>::operator+= (const vec<Sz, U>& obj)
         {
             for(std::size_t count{}; count < N; ++count)
@@ -202,7 +218,7 @@ namespace Pandora
         }
 
         template<std::size_t N, typename T>
-        template<std::size_t Sz, typename U, typename, typename>
+            template<std::size_t Sz, typename U, typename, typename>
         constexpr inline vec<N, T>& vec<N, T>::operator-= (const vec<Sz, U>& obj)
         {
             for(std::size_t count{}; count < N; ++count)
@@ -211,6 +227,17 @@ namespace Pandora
             return *this;
         }
 
+        template<std::size_t N, typename T>
+            template<typename>
+        constexpr inline vec<N, T>& vec<N, T>::operator*= (const float scl)
+        {
+            for (auto& elem : *this)
+                elem *= scl;
+            
+            return *this;
+        }
+
+        // Functions friends
         template<std::size_t Sz, typename U>
         constexpr inline bool operator== (const vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
         {
