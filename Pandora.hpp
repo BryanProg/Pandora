@@ -253,5 +253,23 @@ namespace Pandora
         {
             return !(lhs == rhs);
         }
+
+        template<std::size_t Sz, typename U>
+        constexpr inline vec<Sz, U>& operator+ (vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
+        {
+            std::cout << "Nonmove\n";
+            lhs += rhs;
+
+            return lhs;
+        }
+
+        template<std::size_t Sz, typename U>
+        constexpr inline vec<Sz, U>&& operator+ (vec<Sz, U>&& lhs, const vec<Sz, U>& rhs)
+        {
+            std::cout << "Move\n";
+            lhs += rhs;
+
+            return std::move(lhs);
+        }
     }
 }
