@@ -23,10 +23,13 @@ namespace Pandora
         constexpr inline bool operator!= (const vec<Sz, U>&, const vec<Sz, U>&);
 
         template<std::size_t Sz, typename U>
-        constexpr inline vec<Sz, U>& operator+ (vec<Sz, U>&, const vec<Sz, U>&);
+        constexpr inline vec<Sz, U> operator+ (vec<Sz, U>, const vec<Sz, U>&);
 
         template<std::size_t Sz, typename U>
-        constexpr inline vec<Sz, U>&& operator+ (vec<Sz, U>&&, const vec<Sz, U>&);
+        constexpr inline vec<Sz, U> operator- (vec<Sz, U>, const vec<Sz, U>&);
+
+        template<std::size_t Sz, typename U>
+        constexpr inline vec<Sz, U> operator* (vec<Sz, U>, const float);
 
         // Definitions
         namespace
@@ -94,8 +97,9 @@ namespace Pandora
             friend constexpr bool operator!= <N, T> (const vec<N, T>&, const vec<N, T>&);
 
             // Binary Operators Friends
-            friend constexpr vec& operator+ <N, T> (vec&, const vec&);
-            friend constexpr vec&& operator+ <N, T> (vec&&, const vec&);
+            friend constexpr vec operator+ <N, T> (vec, const vec&);
+            friend constexpr vec operator- <N, T> (vec, const vec&);
+            friend constexpr vec operator* <N, T> (vec, const float);
 
             public:
                 using value_type      = std::decay_t<T>;
@@ -202,6 +206,8 @@ namespace Pandora
                 constexpr inline vec& operator*= (const float);
 
                 // operator []
+                constexpr inline T& operator[] (const std::size_t idx);
+                constexpr inline const T& operator[] (const std::size_t idx) const;
             private:
                 std::array<T, N> components;
         };
@@ -237,6 +243,22 @@ namespace Pandora
             return *this;
         }
 
+        template<std::size_t N, typename T>
+        constexpr inline const T& vec<N, T>::operator[] (const std::size_t idx) const
+        {
+            assert(idx < N);//"[ERROR] Invalid index");
+
+            return components[idx];
+        }
+
+        template<std::size_t N, typename T>
+        constexpr inline T& vec<N, T>::operator[] (const std::size_t idx)
+        {
+            assert(idx < N); //"[ERROR] Invalid index");
+
+            return components[idx];
+        }
+
         // Functions friends
         template<std::size_t Sz, typename U>
         constexpr inline bool operator== (const vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
@@ -255,21 +277,27 @@ namespace Pandora
         }
 
         template<std::size_t Sz, typename U>
-        constexpr inline vec<Sz, U>& operator+ (vec<Sz, U>& lhs, const vec<Sz, U>& rhs)
+        constexpr inline vec<Sz, U> operator+ (vec<Sz, U> lhs, const vec<Sz, U>& rhs)
         {
-            std::cout << "Nonmove\n";
             lhs += rhs;
 
             return lhs;
         }
 
         template<std::size_t Sz, typename U>
-        constexpr inline vec<Sz, U>&& operator+ (vec<Sz, U>&& lhs, const vec<Sz, U>& rhs)
+        constexpr inline vec<Sz, U> operator- (vec<Sz, U> lhs, const vec<Sz, U>& rhs)
         {
-            std::cout << "Move\n";
-            lhs += rhs;
+            lhs -= rhs;
 
-            return std::move(lhs);
+            return lhs;
+        }
+
+        template<std::size_t Sz, typename U>
+        constexpr inline vec<Sz, U> operator* (vec<Sz, U> obj, const float scl)
+        {
+            obj *= scl;
+
+            return obj;
         }
     }
 }
