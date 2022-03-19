@@ -31,6 +31,9 @@ namespace Pandora
         template<std::size_t Sz, typename U>
         constexpr inline vec<Sz, U> operator* (vec<Sz, U>, const float);
 
+        template<std::size_t Sz, typename U>
+        constexpr inline vec<Sz, U> operator* (const float, vec<Sz, U>);
+
         // Definitions
         namespace
         {
@@ -100,6 +103,7 @@ namespace Pandora
             friend constexpr vec operator+ <N, T> (vec, const vec&);
             friend constexpr vec operator- <N, T> (vec, const vec&);
             friend constexpr vec operator* <N, T> (vec, const float);
+            friend constexpr vec operator* <N, T> (const float, vec);
 
             public:
                 using value_type      = std::decay_t<T>;
@@ -113,8 +117,6 @@ namespace Pandora
                 using difference_type = typename std::iterator_traits<iterator>::difference_type;
             
             public:
-                constexpr vec() = default;
-
                 constexpr vec(const vec&) = default;
                 constexpr vec(vec&&)      = default;
 
@@ -131,6 +133,10 @@ namespace Pandora
                         components[sz] = *(list_arg.begin() + sz);
                 }*/
 
+                constexpr vec()
+                :   components{}
+                {
+                }
                 //to do(Bryan): Implement to initialize with up to 0 <element <= n
                 // Taking restriction contains have the same size, ie being less than or equal.
                 template<typename iter,
@@ -205,9 +211,12 @@ namespace Pandora
                 template<typename = std::enable_if_t<is_fp_v<T> || is_uint_v<T> || is_int_v<T>>>
                 constexpr inline vec& operator*= (const float);
 
-                // operator []
                 constexpr inline T& operator[] (const std::size_t idx);
                 constexpr inline const T& operator[] (const std::size_t idx) const;
+
+            public:
+                constexpr inline vec& negative();
+
             private:
                 std::array<T, N> components;
         };
@@ -246,7 +255,7 @@ namespace Pandora
         template<std::size_t N, typename T>
         constexpr inline const T& vec<N, T>::operator[] (const std::size_t idx) const
         {
-            assert(idx < N);//"[ERROR] Invalid index");
+            assert(idx < N); //"[ERROR] Invalid index");
 
             return components[idx];
         }
@@ -298,6 +307,21 @@ namespace Pandora
             obj *= scl;
 
             return obj;
+        }
+
+        template<std::size_t Sz, typename U>
+        constexpr inline vec<Sz, U> operator* (const float scl, vec<Sz, U> obj)
+        {
+            return obj * scl;
+        }
+
+        // Member Functions
+        template<std::size_t N, typename T>
+        constexpr inline vec<N, T>& vec<N, T>::negative()
+        {
+            (*this) *= -1;
+
+            return *this;
         }
     }
 }
