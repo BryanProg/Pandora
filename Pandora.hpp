@@ -41,29 +41,29 @@ namespace Pandora
 
             // Settings for integers signed
             template<typename T>
-            using vec1i = vec<1ULL, std::enable_if_t<is_int_v<T>, T>>;
+            using vec1i = vec<1ULL, std::enable_if_t<Utils::is_int_v<T>, T>>;
 
             template<typename T>
-            using vec2i = vec<2ULL, std::enable_if_t<is_int_v<T>, T>>;
+            using vec2i = vec<2ULL, std::enable_if_t<Utils::is_int_v<T>, T>>;
 
             template<typename T>
-            using vec3i = vec<3ULL, std::enable_if_t<is_int_v<T>, T>>;
+            using vec3i = vec<3ULL, std::enable_if_t<Utils::is_int_v<T>, T>>;
 
             template<typename T>
-            using vec4i = vec<4ULL, std::enable_if_t<is_int_v<T>, T>>;
+            using vec4i = vec<4ULL, std::enable_if_t<Utils::is_int_v<T>, T>>;
 
             // Settings for integers unsigned
             template<typename T>
-            using vec1u = vec<1ULL, std::enable_if_t<is_uint_v<T>, T>>;
+            using vec1u = vec<1ULL, std::enable_if_t<Utils::is_uint_v<T>, T>>;
 
             template<typename T>
-            using vec2u = vec<2ULL, std::enable_if_t<is_uint_v<T>, T>>;
+            using vec2u = vec<2ULL, std::enable_if_t<Utils::is_uint_v<T>, T>>;
 
             template<typename T>
-            using vec3u = vec<3ULL, std::enable_if_t<is_uint_v<T>, T>>;
+            using vec3u = vec<3ULL, std::enable_if_t<Utils::is_uint_v<T>, T>>;
 
             template<typename T>
-            using vec4u = vec<4ULL, std::enable_if_t<is_uint_v<T>, T>>;
+            using vec4u = vec<4ULL, std::enable_if_t<Utils::is_uint_v<T>, T>>;
 
 
                                         /* # using no-templates # */
@@ -141,12 +141,12 @@ namespace Pandora
                 // Taking restriction contains have the same size, ie being less than or equal.
                 template<typename iter,
                          typename = std::enable_if_t<!std::is_same_v<iter, value_type>>,// The iterator should be different
-                         typename = std::enable_if_t<is_iterator_v<iter, std::forward_iterator_tag>>>
+                         typename = std::enable_if_t<Utils::is_iterator_v<iter, std::forward_iterator_tag>>>
                 explicit constexpr vec(iter b, iter e)
                     : components{}
                 {
 
-                    Difference_iterator_t<iter> diff_it = std::distance(b, e);
+                   Utils:: Difference_iterator_t<iter> diff_it = std::distance(b, e);
 
                     assert(diff_it == N);
                     
@@ -186,7 +186,7 @@ namespace Pandora
 
                 template<typename ... Args,
                          typename = std::enable_if_t<sizeof...(Args) == N>,
-                         typename = std::enable_if_t<is_all_convertible_v<T, Args...>>>
+                         typename = std::enable_if_t<Utils::is_all_convertible_v<T, Args...>>>
                 constexpr vec(Args&&... args)
                     : components{ std::forward<T>(static_cast<T>(args))... }
                 {
@@ -208,15 +208,18 @@ namespace Pandora
                          typename = std::enable_if_t<std::is_convertible_v<U, T>>>
                 constexpr inline vec& operator-= (const vec<Sz, U>& obj);
 
-                template<typename = std::enable_if_t<is_fp_v<T> || is_uint_v<T> || is_int_v<T>>>
+                template<typename = std::enable_if_t<Utils::is_fp_v<T> || Utils::is_uint_v<T> || Utils::is_int_v<T>>>
                 constexpr inline vec& operator*= (const float);
 
                 constexpr inline T& operator[] (const std::size_t idx);
                 constexpr inline const T& operator[] (const std::size_t idx) const;
 
             public:
-                constexpr inline vec& negative();
+                constexpr inline vec &negative();
 
+                template<typename = std::enable_if_t<std::is_convertible_v<T, float>>>
+                constexpr inline float magnitude();
+              
             private:
                 std::array<T, N> components;
         };
@@ -322,6 +325,18 @@ namespace Pandora
             (*this) *= -1;
 
             return *this;
+        }
+
+        template <std::size_t N, typename T>
+            template <typename>
+        constexpr inline float vec<N, T>::magnitude()
+        {
+            float mag{};
+
+            for(auto elem : components)
+                mag += (elem * elem);
+
+            return Utils::Sqrt<float>{}(mag);
         }
     }
 }
