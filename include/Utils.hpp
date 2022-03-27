@@ -36,7 +36,7 @@ namespace Pandora
         constexpr inline bool is_all_convertible_v = (std::is_convertible_v<T, Args> && ...);
 
         template<typename T>
-        struct Sqrt
+        struct sqrt
         {
             static_assert(!std::is_reference_v<T>, "[ERROR] Type \"T\" can't be reference\n");
             static_assert(!std::is_pointer_v<T>, "[ERROR] Type \"T\" can't be pointer\n");
@@ -46,7 +46,7 @@ namespace Pandora
             {
                 return std::sqrt(val);
             }
-
+            
             /*constexpr inline T&& inverse (T&& val) const
             {
                 return std::forward<T>(std::sqrt(val));
