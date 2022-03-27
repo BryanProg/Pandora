@@ -97,8 +97,9 @@ namespace Pandora
         template<std::size_t N, typename T>
         class vec
         {
-            static_assert(!std::is_reference_v<T>, "[ERROR] Type \"T\" can't be reference\n");
-            static_assert(!std::is_pointer_v<T>, "[ERROR] Type \"T\" can't be pointer\n");
+            static_assert(!std::is_reference_v<T>, "[ERROR] Type \"T\" can't be reference");
+            static_assert(!std::is_pointer_v<T>, "[ERROR] Type \"T\" can't be pointer");
+            static_assert( N > 0ULL, "[ERROR] The component number needs to be greater than zero");
 
             template<std::size_t, typename> friend class vec;
 
@@ -235,14 +236,17 @@ namespace Pandora
             public:
                 constexpr inline vec &negative();
 
-                template<typename = std::enable_if_t<std::is_convertible_v<T, float>>>
+                template <typename = std::enable_if_t<Utils::is_fp_v<T> || Utils::is_uint_v<T> || Utils::is_int_v<T>>>
+                constexpr inline bool is_zero_vec() const;
+
+                template <typename = std::enable_if_t<std::is_convertible_v<T, float>>>
                 constexpr inline float magnitude();
               
-                template<typename = std::enable_if_t<Utils::is_fp_v<T> || Utils::is_uint_v<T> || Utils::is_int_v<T>>,
+                template <typename = std::enable_if_t<Utils::is_fp_v<T> || Utils::is_uint_v<T> || Utils::is_int_v<T>>,
                          typename = std::enable_if_t<(N > 0ULL)>>
                 constexpr inline vec& normalize();
 
-                template<typename = std::enable_if_t<Utils::is_fp_v<T> || Utils::is_uint_v<T> || Utils::is_int_v<T>>,
+                template <typename = std::enable_if_t<Utils::is_fp_v<T> || Utils::is_uint_v<T> || Utils::is_int_v<T>>,
                          typename = std::enable_if_t<(N > 0ULL)>>
                 constexpr inline vec copy_normalized() const;
 
@@ -378,6 +382,19 @@ namespace Pandora
             (*this) *= -1;
 
             return *this;
+        }
+
+        template <std::size_t N, typename T>
+            template <typename>
+        constexpr inline bool vec<N, T>::is_zero_vec() const
+        {
+            const value_type temp{};
+
+            for (const auto& elem : this->components)
+                if (elem != temp)
+                    return false;
+            
+            return true;
         }
 
         template <std::size_t N, typename T>
