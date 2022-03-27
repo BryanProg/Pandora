@@ -413,6 +413,9 @@ namespace Pandora
             template <typename, typename>
         constexpr inline vec<N, T>& vec<N, T>::normalize()
         {
+            if (this->is_zero_vec())
+                return  *this;
+                
             return *this /= this->magnitude();
         }
 
