@@ -42,7 +42,7 @@ namespace Pandora
         constexpr inline vec<Sz, U> operator/ (const float, vec<Sz, U>);
 
         // Definitions
-        namespace fast_defs
+        namespace FastDefs
         {
                                             /* # using templates # */
 
@@ -415,7 +415,7 @@ namespace Pandora
         {
             if (this->is_zero_vec())
                 return  *this;
-                
+
             return *this /= this->magnitude();
         }
 
