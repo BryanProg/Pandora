@@ -239,7 +239,7 @@ namespace Pandora
                 constexpr inline bool is_zero_vec() const;
 
                 template <typename = std::enable_if_t<std::is_convertible_v<T, float>>>
-                constexpr inline float magnitude();
+                constexpr inline float magnitude() const;
               
                 template <typename = std::enable_if_t<Utils::is_fp_v<T> || Utils::is_uint_v<T> || Utils::is_int_v<T>>,
                          typename = std::enable_if_t<(N > 0ULL)>>
@@ -248,6 +248,12 @@ namespace Pandora
                 template <typename = std::enable_if_t<Utils::is_fp_v<T> || Utils::is_uint_v<T> || Utils::is_int_v<T>>,
                          typename = std::enable_if_t<(N > 0ULL)>>
                 constexpr inline vec copy_normalized() const;
+
+                template <std::size_t Sz, typename U,
+                          typename = std::enable_if_t<Sz == N>,
+                          typename = std::enable_if_t<std::is_convertible_v<T, float>>,
+                          typename = std::enable_if_t<std::is_convertible_v<U, float>>>
+                constexpr inline float distance(const vec<Sz, U>&) const;
 
             private:
                 std::array<T, N> components;
@@ -398,8 +404,11 @@ namespace Pandora
 
         template <std::size_t N, typename T>
             template <typename>
-        constexpr inline float vec<N, T>::magnitude()
+        constexpr inline float vec<N, T>::magnitude() const
         {
+            if (this->is_zero_vec())
+                return 0.0f;
+
             float mag{};
 
             for(auto elem : components)
@@ -425,6 +434,18 @@ namespace Pandora
             auto temp = *this;
 
             return temp.normalize();
+        }
+
+        template <std::size_t N, typename T>
+            template <std::size_t Sz, typename U, typename, typename, typename>
+        constexpr inline float vec<N, T>::distance(const vec<Sz, U>& obj) const
+        {
+            float dist{};
+
+            for(size_type idx{}; idx < N; ++idx)
+                dist += POW2(obj.components[idx] - this->components[idx]);
+
+            return Utils::sqrt<float>{}(dist);
         }
     }
 }
