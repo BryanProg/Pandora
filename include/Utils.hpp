@@ -2,6 +2,8 @@
 
 #include <type_traits>
 
+#define POW2(X) ((X) * (X))
+
 namespace Pandora
 {
     namespace Utils
@@ -42,7 +44,7 @@ namespace Pandora
             static_assert(!std::is_pointer_v<T>, "[ERROR] Type \"T\" can't be pointer\n");
             static_assert(is_fp_v<T>, "[ERROR] Type \"T\" need a floating point\n");
 
-            constexpr inline float operator() (T val)
+            constexpr inline T operator() (T val)
             {
                 return std::sqrt(val);
             }
