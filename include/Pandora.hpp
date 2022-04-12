@@ -261,6 +261,20 @@ namespace Pandora
                          typename = std::enable_if_t<std::is_convertible_v<U, float>>>
                 constexpr inline float dot(const vec<Sz, U>&) const;
 
+                //implementar quando tiver tempo
+                template <std::size_t Sz, typename U,
+                          typename = std::enable_if_t<Sz == N>,
+                          typename = std::enable_if_t<std::is_convertible_v<T, float>>,
+                          typename = std::enable_if_t<std::is_constructible_v<U, float>>>
+                constexpr inline float dot(const vec<Sz, U>&, float) const;
+
+                // implementar quando tiver tempo
+                template <std::size_t Sz, typename U,
+                          typename = std::enable_if_t<Sz == N>,
+                          typename = std::enable_if_t<std::is_convertible_v<T, float>>,
+                          typename = std::enable_if_t<std::is_constructible_v<U, float>>>
+                constexpr inline float angle_between(const vec<Sz, U>&) const;
+
             private:
                 std::array<T, N> components;
         };
@@ -464,6 +478,16 @@ namespace Pandora
                 dot_product += this->components[idx] * obj.components[idx];
             
             return dot_product;
+        }
+
+        template <std::size_t N, typename T>
+            template <std::size_t Sz, typename U, typename, typename,typename>
+        constexpr inline float vec<N,T>::dot(const vec<Sz, U>& obj, float degrees) const
+        {
+            if (this->is_zero_vec() || obj.is_zero_vec())
+                return float{};
+
+            // fazer o codigo produto interno baseado em angulos;
         }
     }
 }
