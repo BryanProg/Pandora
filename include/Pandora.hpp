@@ -200,7 +200,7 @@ namespace Pandora
                          typename = std::enable_if_t<sizeof...(Args) == N>,
                          typename = std::enable_if_t<Utils::is_all_convertible_v<T, Args...>>>
                 constexpr vec(Args&&... args)
-                    : components{ std::forward<T>(static_cast<T>(args))... }
+                    :components{ std::forward<T>(static_cast<T>(args))... } 
                 {
                 }
                 
@@ -254,6 +254,12 @@ namespace Pandora
                           typename = std::enable_if_t<std::is_convertible_v<T, float>>,
                           typename = std::enable_if_t<std::is_convertible_v<U, float>>>
                 constexpr inline float distance(const vec<Sz, U>&) const;
+
+                template <std::size_t Sz, typename U,
+                         typename = std::enable_if_t<Sz == N>,
+                         typename = std::enable_if_t<std::is_convertible_v<T, float>>,
+                         typename = std::enable_if_t<std::is_convertible_v<U, float>>>
+                constexpr inline float dot(const vec<Sz, U>&) const;
 
             private:
                 std::array<T, N> components;
@@ -446,6 +452,18 @@ namespace Pandora
                 dist += POW2(obj.components[idx] - this->components[idx]);
 
             return Utils::sqrt<float>{}(dist);
+        }
+
+        template <std::size_t N, typename T>
+            template <std::size_t Sz, typename U, typename, typename, typename>
+        constexpr inline float vec<N, T>::dot(const vec<Sz, U>& obj) const
+        {
+            float dot_product{};
+
+            for (std::size_t idx{}; idx < N; ++idx)
+                dot_product += this->components[idx] * obj.components[idx];
+            
+            return dot_product;
         }
     }
 }

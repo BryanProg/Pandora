@@ -31,7 +31,7 @@ namespace Pandora
         template <typename iter, typename category = std::input_iterator_tag>
         constexpr inline bool is_iterator_v = std::is_convertible_v<iter_category_t<std::decay_t<iter>>, category>;
 
-        template<typename T>
+        template <typename T>
         using Difference_iterator_t = typename std::iterator_traits<T>::difference_type;
 
         template<typename T, typename ... Args>
