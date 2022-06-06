@@ -261,7 +261,6 @@ namespace Pandora
                          typename = std::enable_if_t<std::is_convertible_v<U, float>>>
                 constexpr inline float dot(const vec<Sz, U>&) const;
 
-                //implementar quando tiver tempo
                 template <std::size_t Sz, typename U,
                           typename = std::enable_if_t<Sz == N>,
                           typename = std::enable_if_t<Utils::is_R2_v<N, Sz> || Utils::is_R3_v<N, Sz>>,
@@ -269,12 +268,12 @@ namespace Pandora
                           typename = std::enable_if_t<std::is_constructible_v<U, float>>>
                 constexpr inline float dot(const vec<Sz, U>&, float) const;
 
-                // implementar quando tiver tempo
                 template <std::size_t Sz, typename U,
                           typename = std::enable_if_t<Sz == N>,
+                          typename = std::enable_if_t<Utils::is_R2_v<N, Sz> || Utils::is_R3_v<N, Sz>>,
                           typename = std::enable_if_t<std::is_convertible_v<T, float>>,
                           typename = std::enable_if_t<std::is_constructible_v<U, float>>>
-                constexpr inline float angle_between(const vec<Sz, U>&) const;
+                constexpr inline float angle_between(const vec<Sz, U>&, float) const;
 
             private:
                 std::array<T, N> components;
@@ -492,5 +491,20 @@ namespace Pandora
 
             return this->magnitude() * obj.magnitude() * cos(degrees * M_PI/180.f);
         }
+
+        template <std::size_t N, typename T>
+            template <std::size_t Sz, typename U,
+                    typename,typename,
+                    typename,typename>
+        constexpr inline float vec<N, T>::angle_between(const vec<Sz, U>& obj, float dot_product) const
+        {
+            if (this->is_zero_vec() || obj.is_zero_vec())
+                return float{};
+            
+            float v_cos = dot_product/(this->magnitude() * obj.magnitude());
+
+            return acos(v_cos) * 180.f/M_PI;
+        }
+        
     }
 }
