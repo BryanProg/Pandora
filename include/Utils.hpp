@@ -34,8 +34,20 @@ namespace Pandora
         template <typename T>
         using Difference_iterator_t = typename std::iterator_traits<T>::difference_type;
 
-        template<typename T, typename ... Args>
+        template <typename T, typename ... Args>
         constexpr inline bool is_all_convertible_v = (std::is_convertible_v<T, Args> && ...);
+
+        template <std::size_t V, std::size_t W>
+        constexpr inline bool is_R2_v = (V == 2u && W == 2u) ? true : false;
+
+        template <std::size_t V, std::size_t W>
+        constexpr inline bool is_R3_v = (V == 3u && W == 3u) ? true : false;
+
+        template <std::size_t N, ::size_t V, std::size_t W>
+        constexpr inline bool is_RN_v = (V == N && W == N) ? true : false;
+
+        /* template <std::size_t, std::size_t, size_t>
+        static inline bool is_equal */
 
         template<typename T>
         struct sqrt
