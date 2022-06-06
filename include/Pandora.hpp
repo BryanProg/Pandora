@@ -264,6 +264,7 @@ namespace Pandora
                 //implementar quando tiver tempo
                 template <std::size_t Sz, typename U,
                           typename = std::enable_if_t<Sz == N>,
+                          typename = std::enable_if_t<Utils::is_R2_v<N, Sz> || Utils::is_R3_v<N, Sz>>,
                           typename = std::enable_if_t<std::is_convertible_v<T, float>>,
                           typename = std::enable_if_t<std::is_constructible_v<U, float>>>
                 constexpr inline float dot(const vec<Sz, U>&, float) const;
@@ -481,13 +482,15 @@ namespace Pandora
         }
 
         template <std::size_t N, typename T>
-            template <std::size_t Sz, typename U, typename, typename,typename>
+            template <std::size_t Sz, typename U, 
+                      typename, typename, 
+                      typename, typename>
         constexpr inline float vec<N,T>::dot(const vec<Sz, U>& obj, float degrees) const
         {
             if (this->is_zero_vec() || obj.is_zero_vec())
                 return float{};
 
-            // fazer o codigo produto interno baseado em angulos;
+            return this->magnitude() * obj.magnitude() * cos(degrees * M_PI/180.f);
         }
     }
 }

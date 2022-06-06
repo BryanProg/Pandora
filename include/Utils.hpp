@@ -46,9 +46,6 @@ namespace Pandora
         template <std::size_t N, ::size_t V, std::size_t W>
         constexpr inline bool is_RN_v = (V == N && W == N) ? true : false;
 
-        /* template <std::size_t, std::size_t, size_t>
-        static inline bool is_equal */
-
         template<typename T>
         struct sqrt
         {
