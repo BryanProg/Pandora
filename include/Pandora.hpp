@@ -40,6 +40,9 @@ namespace Pandora
         template <std::size_t Sz, typename U>
         constexpr inline vec<Sz, U> operator/ (const float, vec<Sz, U>);
 
+        template <std::size_t Sz, typename U>
+        inline std::ostream& operator << (std::ostream&, const vec<Sz, U>);
+
         // Definitions
         namespace FastDefs
         {
@@ -403,6 +406,14 @@ namespace Pandora
         constexpr inline vec<Sz, U> operator/ (const float scl, vec<Sz, U> obj)
         {
             return obj / scl;
+        }
+
+        template <std::size_t Sz, typename U>
+        inline std::ostream& operator << (std::ostream& os, const vec<Sz, U> vobj)
+        {
+            return os << "[" << vobj[0] << ", "
+                      << vobj[1] << ", "
+                      << vobj[2] << "]" << std::endl;
         }
 
         //////////////////////////////////////////// Member Functions /////////////////////////////////////////////////

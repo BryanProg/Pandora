@@ -2,12 +2,11 @@
 
 #include <type_traits>
 
-#define POW2(X) ((X) * (X))
-
 namespace Pandora
 {
     namespace Utils
     {
+        #define POW2(X) ((X) * (X))
         template<typename T>
         constexpr bool is_int_v = std::is_same_v<std::decay_t<T>, int8_t>  || 
                                 std::is_same_v<std::decay_t<T>, int16_t> ||
