@@ -275,6 +275,12 @@ namespace Pandora
                           typename = std::enable_if_t<std::is_constructible_v<U, float>>>
                 constexpr inline float angle_between(const vec<Sz, U>&, float) const;
 
+                template <std::size_t Sz, typename U,
+                          typename = std::enable_if_t<Sz == N>,
+                          typename = std::enable_if_t<Utils::is_R3_v<N, Sz>>,
+                          typename = std::enable_if_t<std::is_constructible_v<U, T>>>
+                constexpr inline vec<N, T> cross_product(const vec<Sz, U>&) const;
+
             private:
                 std::array<T, N> components;
         };
@@ -505,6 +511,16 @@ namespace Pandora
 
             return acos(v_cos) * 180.f/M_PI;
         }
-        
+
+        template<std::size_t N, typename T>
+            template <std::size_t Sz, typename U, typename, typename,typename>
+        constexpr inline vec<N, T> vec<N, T>::cross_product(const vec<Sz, U>& obj) const
+        {
+            auto intern = *this;
+
+            return vec<N, T>{ intern[1] * obj[2] - intern[2] * obj[1],
+                              -1 * (intern[0] * obj[2] - intern[2] * obj[0]),
+                              intern[0] * obj[1] - intern[1] * obj[0]};
+        }
     }
 }
