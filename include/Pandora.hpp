@@ -284,6 +284,12 @@ namespace Pandora
                           typename = std::enable_if_t<std::is_constructible_v<U, T>>>
                 constexpr inline vec<N, T> cross_product(const vec<Sz, U>&) const;
 
+                template <std::size_t Sz, typename U,
+                          typename = std::enable_if_t<N == Sz>,
+                          typename = std::enable_if_t<std::is_convertible_v<U, T>>,
+                          typename = std::enable_if_t<std::is_convertible_v<T, double>>>
+                constexpr inline vec lerb(const vec<Sz, U>, float) const noexcept;
+
             private:
                 std::array<T, N> components;
         };
@@ -532,6 +538,15 @@ namespace Pandora
             return vec<N, T>{ intern[1] * obj[2] - intern[2] * obj[1],
                               -1 * (intern[0] * obj[2] - intern[2] * obj[0]),
                               intern[0] * obj[1] - intern[1] * obj[0]};
+        }
+
+        template <std::size_t N, typename T>
+            template <std::size_t Sz, typename U, typename, typename,typename>
+        constexpr inline vec<N, T> vec<N, T>::lerb(const vec<Sz, U> ovec, float t) const noexcept
+        {
+            t = BETWEEN_0_AND_1(t);
+
+            return vec{ *this + ((ovec - *this) * t)};
         }
     }
 }
