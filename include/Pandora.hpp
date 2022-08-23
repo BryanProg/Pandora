@@ -546,7 +546,7 @@ namespace Pandora
         {
             t = BETWEEN_0_AND_1(t);
 
-            return vec{ *this + ((ovec - *this) * t)};
+            return vec{(1 - t) * (*this) - t*ovec};
         }
     }
 }
