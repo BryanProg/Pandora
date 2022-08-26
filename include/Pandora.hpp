@@ -290,6 +290,11 @@ namespace Pandora
                           typename = std::enable_if_t<std::is_convertible_v<T, double>>>
                 constexpr inline vec lerb(const vec<Sz, U>, float) const noexcept;
 
+                template <std::size_t Sz, typename U,
+                          typename = std::enable_if_t<N == Sz>,
+                          typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+                constexpr inline vec project(const vec<Sz, U>&) const;
+
             private:
                 std::array<T, N> components;
         };
@@ -547,6 +552,13 @@ namespace Pandora
             t = BETWEEN_0_AND_1(t);
 
             return vec{(1 - t) * (*this) - t*ovec};
+        }
+
+        template <std::size_t N, typename T>
+            template <std::size_t Sz, typename U, typename, typename>
+        constexpr inline vec<N, T> vec<N, T>::project(const vec<Sz, U>& ovec) const
+        {
+            return (dot(ovec)/POW2(ovec.magnitude())) * ovec;
         }
     }
 }
