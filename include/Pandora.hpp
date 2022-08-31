@@ -293,7 +293,12 @@ namespace Pandora
                 template <std::size_t Sz, typename U,
                           typename = std::enable_if_t<N == Sz>,
                           typename = std::enable_if_t<std::is_convertible_v<U, T>>>
-                constexpr inline vec project(const vec<Sz, U>&) const;
+                constexpr inline vec project_along(const vec<Sz, U>&) const;
+
+                template <std::size_t Sz, typename U,
+                          typename = std::enable_if_t<N == Sz>,
+                          typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+                constexpr inline vec project_ortho(const vec<Sz, U>&) const;
 
             private:
                 std::array<T, N> components;
@@ -556,9 +561,16 @@ namespace Pandora
 
         template <std::size_t N, typename T>
             template <std::size_t Sz, typename U, typename, typename>
-        constexpr inline vec<N, T> vec<N, T>::project(const vec<Sz, U>& ovec) const
+        constexpr inline vec<N, T> vec<N, T>::project_along(const vec<Sz, U>& ovec) const
         {
             return (dot(ovec)/POW2(ovec.magnitude())) * ovec;
+        }
+
+        template <std::size_t N, typename T>
+            template <std::size_t Sz, typename U, typename, typename>
+        constexpr inline vec<N, T> vec<N, T>::project_ortho(const vec<Sz, U>& ovec) const
+        {
+            return *this - project_along(ovec);
         }
     }
 }
