@@ -33,3 +33,6 @@
 
 #others
 *.json
+
+#folders
+build
