@@ -80,22 +80,23 @@ namespace Pandora::Mat
 
 
 			template <typename U, typename = std::enable_if_t<std::is_convertible_v<U, T>>>
-			Mat(U init_value);
+			Mat(U&& init_value);
+
+		// API Public
+		public:
+			void identity();
+			void transpose();
 
 		private:
-			std::array<std::array<T, C>, R> mat_;
+			std::array<T, R * C> mat_;
 	};
 
 	template <uint8_t R, uint8_t C, typename T>
 		template<typename U, typename>
-	Mat<R, C, T>::Mat(U init_value)
+	Mat<R, C, T>::Mat(U&& init_value)
 		: mat_{}
 	{
-		std::array<T, C> tempory;
-
-		tempory.fill(init_value);
-
-		mat_.fill(std::move(tempory));
+		mat_.fill(std::forward<U>(init_value));
 	}
 
 	template <std::uint8_t R, std::uint8_t C, typename U>
@@ -103,10 +104,11 @@ namespace Pandora::Mat
 	{
 
 		os << "{\n";
-		for (uint8_t r{}; r < R; ++r)
+
+		for(uint8_t count{1}; const auto& elems : obj.mat_)
 		{
-			for(uint8_t c{}; c < C; ++c)
-				os << "   " << obj.mat_[r][c] << ((c + 1 == C) ? "\n" : ", ");
+			os << "   " << elems << (((count % C) == 0) ? "\n" : ", ");
+			++count;
 		}
 		return os << "}" << std::endl;
 	}

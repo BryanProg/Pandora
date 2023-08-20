@@ -26,7 +26,7 @@ add_executable(pandora ${pandr_sources} ${pandr_headers})
 target_include_directories(pandora PRIVATE ${pandr_headers_dir})
 
 set_target_properties(pandora PROPERTIES
-	CXX_STANDARD 17
+	CXX_STANDARD 20
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
 )
