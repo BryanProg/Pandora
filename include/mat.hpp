@@ -4,62 +4,110 @@
 #include <utils.hpp>
 #include <cstdint>
 #include <type_traits>
+#include <array>
 namespace Pandora::Mat
 {
 	//Mat<row, column, type>
 
 	template <uint8_t R, uint8_t C, typename T>
-	class mat;
+	class Mat;
+
+	template <std::uint8_t R, std::uint8_t C, typename U>
+    inline std::ostream& operator << (std::ostream&, const Mat<R, C, U>&);
+
 	namespace FastDef
 	{
 		template <uint8_t C, typename T>
-		using mat1 = mat<1, C, T>;
+		using Mat1 = Mat<1, C, T>;
 		template <uint8_t C, typename T>
-		using mat2 = mat<2, C, T>;
+		using Mat2 = Mat<2, C, T>;
 		template <uint8_t C, typename T>
-		using mat3 = mat<3, C, T>;
+		using Mat3 = Mat<3, C, T>;
 		template <uint8_t C, typename T>
-		using mat4 = mat<4, C, T>;
+		using Mat4 = Mat<4, C, T>;
 
 		template <typename T>
-		using mat1x1 = mat<1, 1, T>;
+		using Mat1x1 = Mat<1, 1, T>;
 		template <typename T>
-		using mat2x2 = mat<2, 2, T>;
+		using Mat2x2 = Mat<2, 2, T>;
 		template <typename T>
-		using mat3x3 = mat<3, 3, T>;
+		using Mat3x3 = Mat<3, 3, T>;
 		template <typename T>
-		using mat4x4 = mat<4, 4, T>;
+		using Mat4x4 = Mat<4, 4, T>;
 
 		template <typename T>
-		using mat1x1i = mat<1, 1, std::enable_if_t<Utils::is_int_v<T>, T>>;
+		using Mat1x1i = Mat<1, 1, std::enable_if_t<Utils::is_int_v<T>, T>>;
 		template <typename T>
-		using mat2x2i = mat<2, 2, std::enable_if_t<Utils::is_int_v<T>, T>>;
+		using Mat2x2i = Mat<2, 2, std::enable_if_t<Utils::is_int_v<T>, T>>;
 		template <typename T>
-		using mat3x3i = mat<3, 3, std::enable_if_t<Utils::is_int_v<T>, T>>;
+		using Mat3x3i = Mat<3, 3, std::enable_if_t<Utils::is_int_v<T>, T>>;
 		template <typename T>
-		using mat4x4i = mat<4, 4, std::enable_if_t<Utils::is_int_v<T>, T>>;
+		using Mat4x4i = Mat<4, 4, std::enable_if_t<Utils::is_int_v<T>, T>>;
 
 		template <typename T>
-		using mat1x1u = mat<1, 1, std::enable_if_t<Utils::is_uint_v<T>, T>>;
+		using Mat1x1u = Mat<1, 1, std::enable_if_t<Utils::is_uint_v<T>, T>>;
 		template <typename T>
-		using mat2x2u = mat<2, 2, std::enable_if_t<Utils::is_uint_v<T>, T>>;
+		using Mat2x2u = Mat<2, 2, std::enable_if_t<Utils::is_uint_v<T>, T>>;
 		template <typename T>
-		using mat3x3u = mat<3, 3, std::enable_if_t<Utils::is_uint_v<T>, T>>;
+		using Mat3x3u = Mat<3, 3, std::enable_if_t<Utils::is_uint_v<T>, T>>;
 		template <typename T>
-		using mat4x4u = mat<4, 4, std::enable_if_t<Utils::is_uint_v<T>, T>>;
+		using Mat4x4u = Mat<4, 4, std::enable_if_t<Utils::is_uint_v<T>, T>>;
 
-		using mat1x1f = mat<1, 1, float>;
-		using mat2x2f = mat<2, 2, float>;
-		using mat3x3f = mat<3, 3, float>;
-		using mat4x4f = mat<4, 4, float>;
+		using Mat1x1f = Mat<1, 1, float>;
+		using Mat2x2f = Mat<2, 2, float>;
+		using Mat3x3f = Mat<3, 3, float>;
+		using Mat4x4f = Mat<4, 4, float>;
 
-		using mat1x1df = mat<1, 1, double>;
-		using mat2x2df = mat<2, 2, double>;
-		using mat3x3df = mat<3, 3, double>;
-		using mat4x4df = mat<4, 4, double>;
+		using Mat1x1df = Mat<1, 1, double>;
+		using Mat2x2df = Mat<2, 2, double>;
+		using Mat3x3df = Mat<3, 3, double>;
+		using Mat4x4df = Mat<4, 4, double>;
 	}
 	template <uint8_t R, uint8_t C, typename T>
-	class mat
+	class Mat
 	{
+		friend std::ostream& operator <<<R, C, T> (std::ostream& os, const Mat<R, C, T>& obj);
+
+		public:
+			constexpr Mat() = default;
+			~Mat() = default;
+
+			constexpr Mat( const Mat&) = default;
+			constexpr Mat(Mat&&) = default;
+
+			constexpr Mat& operator= (const Mat&) = default;
+			constexpr Mat& operator= (Mat&&) = default;
+
+
+			template <typename U, typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+			Mat(U init_value);
+
+		private:
+			std::array<std::array<T, C>, R> mat_;
 	};
+
+	template <uint8_t R, uint8_t C, typename T>
+		template<typename U, typename>
+	Mat<R, C, T>::Mat(U init_value)
+		: mat_{}
+	{
+		std::array<T, C> tempory;
+
+		tempory.fill(init_value);
+
+		mat_.fill(std::move(tempory));
+	}
+
+	template <std::uint8_t R, std::uint8_t C, typename U>
+    inline std::ostream& operator << (std::ostream& os, const Mat<R, C, U>& obj)
+	{
+
+		os << "{\n";
+		for (uint8_t r{}; r < R; ++r)
+		{
+			for(uint8_t c{}; c < C; ++c)
+				os << "   " << obj.mat_[r][c] << ((c + 1 == C) ? "\n" : ", ");
+		}
+		return os << "}" << std::endl;
+	}
 }
